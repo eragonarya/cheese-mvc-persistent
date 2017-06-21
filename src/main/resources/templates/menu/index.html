@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::head">
+    <meta charset="UTF-8"/>
+    <title th:text="${title}">Default</title>
+</head>
+<body class="container">
+<nav th:replace="fragments::navigation"></nav>
+
+<div th:each="menu:${menus}">
+    <a th:href="@{/menu/view/{id}(id=${menu.id})}" th:text="${menu.name}"></a>
+</div>
+
+<a href="/menu/add">Add Menu</a>
+
+</body>
+</html>
