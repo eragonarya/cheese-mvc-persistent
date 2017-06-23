@@ -50,6 +50,8 @@ public class CheeseController {
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Cheese");
+            model.addAttribute(newCheese);
+            model.addAttribute("categories", categoryDao.findAll());
             return "cheese/add";
         }
         newCheese.setCategory(cat);
@@ -76,18 +78,28 @@ public class CheeseController {
     @RequestMapping(value="/edit/{cheeseId}", method=RequestMethod.GET)
     public String editCheese(@PathVariable int cheeseId, Model model){
         model.addAttribute("categories", categoryDao.findAll());
-        model.addAttribute("cheese", cheeseDao.findOne(cheeseId));
+        model.addAttribute(cheeseDao.findOne(cheeseId));
+        model.addAttribute("cheeseID", cheeseId);
         model.addAttribute("title", cheeseDao.findOne(cheeseId).getName());
         return "cheese/edit";
     }
     @RequestMapping(value="/edit", method = RequestMethod.POST)
-    public String processEditCheese(int cheeseId, String name, String description, int categoryId){
-        Cheese cheese = cheeseDao.findOne(cheeseId);
-        cheese.setName(name);
-        cheese.setDescription(description);
-        cheese.setCategory(categoryDao.findOne(categoryId));
-        cheeseDao.save(cheese);
-        return "redirect:";
+    public String processEditCheese(Model model,@RequestParam int cheeseId, @ModelAttribute @Valid Cheese cheese, Errors errors){
+        if(errors.hasErrors()){
+            model.addAttribute("categories", categoryDao.findAll());
+            model.addAttribute(cheese);
+            model.addAttribute("cheeseID", cheeseId);
+            model.addAttribute("title", cheeseDao.findOne(cheeseId).getName());
+            return"cheese/edit";
+        }
+        else {
+            Cheese editCheese = cheeseDao.findOne(cheeseId);
+            editCheese.setName(cheese.getName());
+            editCheese.setCategory(editCheese.getCategory());
+            editCheese.setDescription(editCheese.getDescription());
+            cheeseDao.save(editCheese);
+            return "redirect:";
+        }
     }
 
     @RequestMapping(value="/category/{id}")
